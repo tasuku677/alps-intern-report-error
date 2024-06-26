@@ -1,3 +1,5 @@
+import { getImageUrl } from "./getImageUrl.js";
+
 let stage = new Konva.Stage({
     container: 'container',
     width: window.innerWidth,
@@ -6,12 +8,35 @@ let stage = new Konva.Stage({
 
 let layer = new Konva.Layer();
 stage.add(layer);
+
+//
+async function showPicture(){
+    let imageUrl = await getImageUrl();
+    let imageObj = new Image();
+    imageObj.src = (imageUrl) ? imageUrl :"images_temp/SANSK5A001x.jpg"; //deprecated.
+    // imageObj.src = "images_temp/SANSK5A001x.jpg";
+
+    imageObj.onload = function() {
+    let konvaImage = new Konva.Image({
+        x: (stage.width() - imageObj.width) / 2,
+        y: (stage.height() - imageObj.height) / 2,
+        image: imageObj,
+        width: imageObj.width,
+        height: imageObj.height,
+    });
+
+    layer.add(konvaImage);
+    layer.draw();
+    };
+}
+showPicture();
+
 drawCircle(layer);
 layer.draw();
 
 // draw a circle at which the screen is touched.
 function drawCircle(x, y) {
-    var circle = new Konva.Circle({
+    let circle = new Konva.Circle({
         x: x,
         y: y,
         radius: 5,
@@ -24,20 +49,13 @@ function drawCircle(x, y) {
     layer.draw(); 
 }
 
-stage.on('touchstart', function(e) {
-var touchPos = stage.getPointerPosition();
-var touchX = touchPos.x;
-var touchY = touchPos.y;
+stage.on('click touchstart', function(e) {
+let touchPos = stage.getPointerPosition();
+let touchX = touchPos.x;
+let touchY = touchPos.y;
 
 drawCircle(touchX, touchY);
 });
-stage.on('click', function(e) {
-    var touchPos = stage.getPointerPosition();
-    var touchX = touchPos.x;
-    var touchY = touchPos.y;
-    
-    drawCircle(touchX, touchY);
-    });
 
 function decideColorByClickedNumber(number){
     if(number < 10){

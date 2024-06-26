@@ -7,7 +7,7 @@ const config = {
 async function getImageUrl(){
   try{
     let versionId = await fetchVersionId();
-    let url = config.imageUrl + '?' + versionId;
+    let url = config.imageUrl + '?version=' + versionId;
     let imageUrl = await fetch(url)
               .then(response => response.blob())
               .then(blob => URL.createObjectURL(blob))
@@ -15,11 +15,12 @@ async function getImageUrl(){
               //     console.error('Error fetching image:', error);
               //     throw error; 
               // });
-    console.log(imageUrl);
+    console.log("imageURL", imageUrl);
     return imageUrl;
   }catch(err){
     console.log('Error:', err);
   }
 };
 
+// getImageUrl();
 export{getImageUrl};

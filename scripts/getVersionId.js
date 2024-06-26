@@ -7,12 +7,12 @@ async function fetchVersionId() {
     try {
         let response = await fetch(config.assetUrl);
         let data = await response.json();
-        console.log(data);
+        // console.log(data);
         return data['VersionId'];
     } catch (error) {
         console.error('Error fetching version ID:', error);
         return null;
     }
 }
-
+// fetchVersionId()
 export {fetchVersionId};
