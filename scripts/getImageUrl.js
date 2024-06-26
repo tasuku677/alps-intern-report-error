@@ -11,10 +11,10 @@ async function getImageUrl(){
     let imageUrl = await fetch(url)
               .then(response => response.blob())
               .then(blob => URL.createObjectURL(blob))
-              // .catch(error => {
-              //     console.error('Error fetching image:', error);
-              //     throw error; 
-              // });
+              .catch(error => {
+                  console.error('Error fetching image:', error);
+                  throw error; 
+              });
     console.log("imageURL", imageUrl);
     return imageUrl;
   }catch(err){
