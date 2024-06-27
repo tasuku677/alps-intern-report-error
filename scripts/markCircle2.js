@@ -11,6 +11,7 @@ stage.add(layer);
 
 let imageObj = new Image();
 imageObj.src = getLocalImageUrl(); 
+imageObj.src = "images_temp/SANSK5A001x.jpg";
 
 let scale = 0.9;
 if (imageObj.width > stage.width()  || imageObj.height > stage.height()) {
