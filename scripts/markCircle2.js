@@ -20,7 +20,7 @@ if (imageObj.width > stage.width()  || imageObj.height > stage.height()) {
   scale = Math.min(widthScale, heightScale) * 0.9;
 }
 
-imageObj.onload = showPicture;
+// imageObj.onload = showPicture;
 showPicture(imageObj, scale);
 
 drawCircles(imageObj, scale);
@@ -52,12 +52,12 @@ function showPicture(imageObj, scale) {
 
 // draw an circle at regular interval 
 function drawCircles(imageObj, scale) {
-  const rows = 9; // the number of rows
-  const cols = 100; // the number of columns
-  const spacing = (imageObj.height / rows * 2 - 10) * scale;
+  const rows = 13; // the number of rows
+  const cols = 60; // the number of columns
+  const spacing = (imageObj.height / rows) * scale;
   const clickedColor = "rgba(255, 0, 0, 0.2)";
   const normalColor = "rgba(255, 255, 255, 0.1)";
-  const normalStrokeColor = "rgba(255, , 255, 1)";
+  const normalStrokeColor = "rgba(0, 0, 0, 0.1)";
 
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {

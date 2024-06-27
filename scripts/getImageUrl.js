@@ -9,9 +9,8 @@ async function getImageUrl(){
   try{
     let versionId = await getVersionId();
     console.log("versionId=",versionId);
-    let url = (versionId) ? config.imageUrl + '?version=' + versionId : config.imageUrl;
-    console.log("url",url);
-    let responce = await fetch(url);
+    console.log("url", config.imageUrl);
+    let responce = await fetch(config.imageUrl);
     let localImageUrl = URL.createObjectURL(await responce.blob());
     console.log("imageURL", localImageUrl);
     return localImageUrl;
