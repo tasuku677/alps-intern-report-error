@@ -9,14 +9,12 @@ let stage = new Konva.Stage({
 let layer = new Konva.Layer();
 stage.add(layer);
 
-//
-async function showPicture(){
-    let imageUrl = await getImageUrl();
-    let imageObj = new Image();
-    imageObj.src = (imageUrl) ? imageUrl :"images_temp/SANSK5A001x.jpg"; //deprecated.
-    // imageObj.src = "images_temp/SANSK5A001x.jpg";
-
-    imageObj.onload = function() {
+let imageUrl = await getImageUrl();
+let imageObj = new Image();
+imageObj.src = imageUrl;
+// imageObj.src = (imageUrl) ? imageUrl : "images_temp/SANSK5A001x.jpg"; //deprecated.
+// imageObj.src = "images_temp/SANSK5A001x.jpg";
+imageObj.onload = function () {
     let konvaImage = new Konva.Image({
         x: (stage.width() - imageObj.width) / 2,
         y: (stage.height() - imageObj.height) / 2,
@@ -24,11 +22,9 @@ async function showPicture(){
         width: imageObj.width,
         height: imageObj.height,
     });
-
     layer.add(konvaImage);
     layer.draw();
-    };
-}
+};
 showPicture();
 
 drawCircle(layer);
@@ -46,25 +42,25 @@ function drawCircle(x, y) {
     });
 
     layer.add(circle);
-    layer.draw(); 
+    layer.draw();
 }
 
-stage.on('click touchstart', function(e) {
-let touchPos = stage.getPointerPosition();
-let touchX = touchPos.x;
-let touchY = touchPos.y;
+stage.on('click touchstart', function (e) {
+    let touchPos = stage.getPointerPosition();
+    let touchX = touchPos.x;
+    let touchY = touchPos.y;
 
-drawCircle(touchX, touchY);
+    drawCircle(touchX, touchY);
 });
 
-function decideColorByClickedNumber(number){
-    if(number < 10){
+function decideColorByClickedNumber(number) {
+    if (number < 10) {
         return "green";
     }
-    else if(number < 20){
+    else if (number < 20) {
         return "yellow";
     }
-    else{
+    else {
         return "red";
     }
 }

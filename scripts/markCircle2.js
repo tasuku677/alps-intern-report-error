@@ -1,3 +1,5 @@
+import { getImageUrl } from "./getImageUrl.js";
+
 let stage = new Konva.Stage({
   container: 'container',
   width: window.innerWidth,
@@ -8,23 +10,33 @@ let layer = new Konva.Layer();
 stage.add(layer);
 
 let imageObj = new Image();
-imageObj.src = "images_temp/SANSK5A001x.jpg"; 
-imageObj.onload = showPicture(imageObj);
+imageObj.src = getLocalImageUrl(); 
+
+let scale = 0.9;
+if (imageObj.width > stage.width()  || imageObj.height > stage.height()) {
+  const widthScale = stage.width()  / imageObj.width;
+  const heightScale = stage.height() / imageObj.height;
+  scale = Math.min(widthScale, heightScale) * 0.9;
+}
+
+imageObj.onload = showPicture;
+showPicture(imageObj, scale);
+
+drawCircles(imageObj, scale);
 
 console.log(stage.width());
 console.log(stage.height());
 console.log(imageObj.width);
 console.log(imageObj.height);
 
-function showPicture(imageObj) {
-  // calculate the ratio of the screen and the picture.
-  let scale = 0.9;
-  if (imageObj.width > stage.width()  || imageObj.height > stage.height()) {
-    const widthScale = stage.width()  / imageObj.width;
-    const heightScale = stage.height() / imageObj.height;
-    scale = Math.min(widthScale, heightScale) * 0.9;
-  }
 
+async function getLocalImageUrl(){
+  let localImageUrl = await getImageUrl();
+  return localImageUrl;
+}
+
+function showPicture(imageObj, scale) {
+  // calculate the ratio of the screen and the picture.
   let konvaImage = new Konva.Image({
     x: (stage.width() - imageObj.width * scale) / 2,
     y: (stage.height() - imageObj.height * scale) / 2,
@@ -34,19 +46,17 @@ function showPicture(imageObj) {
   });
   layer.add(konvaImage);
   layer.draw();
-
-  drawCircles(imageObj, scale);
 };
 
 
 // draw an circle at regular interval 
 function drawCircles(imageObj, scale) {
-  let rows = 15; // the number of rows
-  let cols = 100; // the number of columns
-  let spacing = (imageObj.height / rows * 2 - 10) * scale;
-  let clickedColor = "rgba(255, 0, 0, 0.2)";
-  let normalColor = "rgba(255, 255, 255, 0.1)";
-  let normalStrokeColor = "rgba(255, 255, 255, 0.1)";
+  const rows = 9; // the number of rows
+  const cols = 100; // the number of columns
+  const spacing = (imageObj.height / rows * 2 - 10) * scale;
+  const clickedColor = "rgba(255, 0, 0, 0.2)";
+  const normalColor = "rgba(255, 255, 255, 0.1)";
+  const normalStrokeColor = "rgba(255, , 255, 1)";
 
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
