@@ -1,5 +1,5 @@
 const config = {
-    assetUrl:"http://127.0.0.1:9081/assets/SANSK5A001x",
+    assetUrl:"http://127.0.0.1:8080/assets/SANSK5A001x",
     // assetUrl:"http://127.0.0.1:9081/assets/SANSK5A002x",
 }
 
