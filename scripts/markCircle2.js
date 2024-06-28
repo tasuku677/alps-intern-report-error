@@ -9,35 +9,17 @@ let stage = new Konva.Stage({
 let layer = new Konva.Layer();
 stage.add(layer);
 
+
 let imageObj = new Image();
-imageObj.src = getLocalImageUrl(); 
-imageObj.src = "images_temp/SANSK5A001x.jpg";
-
-let scale = 0.9;
-if (imageObj.width > stage.width()  || imageObj.height > stage.height()) {
-  const widthScale = stage.width()  / imageObj.width;
-  const heightScale = stage.height() / imageObj.height;
-  scale = Math.min(widthScale, heightScale) * 0.9;
-}
-
-// imageObj.onload = showPicture;
-showPicture(imageObj, scale);
-
-drawCircles(imageObj, scale);
-
-console.log(stage.width());
-console.log(stage.height());
-console.log(imageObj.width);
-console.log(imageObj.height);
-
-
-async function getLocalImageUrl(){
-  let localImageUrl = await getImageUrl();
-  return localImageUrl;
-}
-
-function showPicture(imageObj, scale) {
-  // calculate the ratio of the screen and the picture.
+imageObj.onload = function () {
+  // calculate the ratio of the screen and the picture to make the picture responsible design.
+  let scale = 0.9;
+  if (imageObj.width > stage.width()  || imageObj.height > stage.height()) {
+    const widthScale = stage.width()  / imageObj.width;
+    const heightScale = stage.height() / imageObj.height;
+    scale = Math.min(widthScale, heightScale) * 0.9;
+  }
+  //draw the picture.
   let konvaImage = new Konva.Image({
     x: (stage.width() - imageObj.width * scale) / 2,
     y: (stage.height() - imageObj.height * scale) / 2,
@@ -46,12 +28,13 @@ function showPicture(imageObj, scale) {
     height: imageObj.height * scale,
   });
   layer.add(konvaImage);
+  drawCircles(layer, imageObj, scale);
   layer.draw();
-};
-
+}
+getImageUrl().then(url => imageObj.src = url);
 
 // draw an circle at regular interval 
-function drawCircles(imageObj, scale) {
+function drawCircles(layer, imageObj, scale) {
   const rows = 13; // the number of rows
   const cols = 60; // the number of columns
   const spacing = (imageObj.height / rows) * scale;
@@ -86,5 +69,4 @@ function drawCircles(imageObj, scale) {
       layer.add(circle);
     }
   }
-  layer.draw();
 }

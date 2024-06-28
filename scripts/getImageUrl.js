@@ -1,23 +1,19 @@
-import {getVersionId} from './getVersionId.js';
-
 const config = {
-    imageUrl: "http://localhost:9081/image/SANSK5A001x", //need to be corrected later.
-    // imageUrl: "http://localhost:9081/image/SANSK5A002x",
+  assetUrl:"http://127.0.0.1:8080/assets/SANSK5A001x",
+  // assetUrl:"http://127.0.0.1:9081/assets/SANSK5A002x",
+  port:8080,
 }
 
-async function getImageUrl(){
-  try{
-    let versionId = await getVersionId();
-    console.log("versionId=",versionId);
-    console.log("url", config.imageUrl);
-    let responce = await fetch(config.imageUrl);
-    let localImageUrl = URL.createObjectURL(await responce.blob());
-    console.log("imageURL", localImageUrl);
-    return localImageUrl;
-  }catch(err){
-    console.log('Error:', err);
+async function getImageUrl() {
+  try {
+      let response = await fetch(config.assetUrl);
+      let data = await response.json();
+      console.log("Url :", data['Url'].split('.').slice(0, -1).join('.'));
+      return "http://localhost:" + config.port + data['Url'].split('.').slice(0, -1).join('.');
+  } catch (error) {
+      console.error('Error fetching version ID:', error);
+      return null;
   }
-};
-
-getImageUrl();
+}
+// getImageUrl();
 export{getImageUrl};
