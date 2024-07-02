@@ -1,11 +1,15 @@
 <template>
-    <button @click="submitClickedCircles">Submit</button>
     <div id="container"></div>
+    <!-- <button v-bind:style="buttonStyle" @click="submitClickedCircles">Submit</button> -->
 </template>
 
 <script>
 import Konva from 'konva';
 import { getImageUrl } from '../scripts/getImageUrl.js';
+
+const CLICKEDCOLOR = "rgba(255, 0, 0, 0.2)";
+const NORMALCOLOR = "rgba(255, 255, 255, 0.1)";
+const NORMALSTROKECOLOR = "rgba(255, 255, 255, 0.1)";
 
 export default {
     name: 'KonvaComponent',
@@ -18,7 +22,6 @@ export default {
     },
     mounted() {
         this.initializeKonva();
-        // this.drawImage(this.stage, this.layer, this.clickedPositionList);
     },
     methods: {
         async initializeKonva() {
@@ -38,10 +41,39 @@ export default {
 
                 let imageObj = new Image();
                 imageObj.onload = () => {
+                    this.drawButton(imageObj, layer, stage);
                     this.drawImage(imageObj, layer, stage);
                 };
                 imageObj.src = imageUrl;
             }
+        },
+        drawButton(imageObj, layer, stage) {
+            const button = new Konva.Rect({
+                x: stage.width() / 2, //x:stage.width() / 2 + imageObj.width / 2
+                y: stage.height() / 2 + imageObj.height / 2, //y:stage.height() / 2 + imageObj.height / 2
+                width: 50,
+                height: 20,
+                fill: 'Blue',
+            });
+            const buttonText = new Konva.Text({
+                x: button.x(), // ボタンの位置に合わせて調整
+                y: button.y(), // ボタンの位置に合わせて調整
+                text: 'Done',
+                fontSize: 20,
+                fontFamily: 'Arial',
+                fill: 'White',
+            });
+            // テキストの位置を調整してボタンの中央に配置する例
+            buttonText.position({
+                x: button.x() + (button.width() - buttonText.width()) / 2,
+                y: button.y() + (button.height() - buttonText.height()) / 2,
+            });
+            // button.on('click touchstart', () => this.submitClickedCircles());
+            buttonText.on('click touchstart', () => this.submitClickedCircles());
+
+            layer.add(button);
+            layer.add(buttonText);
+            layer.draw();
         },
         drawImage(imageObj, layer, stage) {
             let scale = 1;
@@ -77,32 +109,38 @@ export default {
                         stroke: "rgba(255, 255, 255, 0.1)",
                         strokeWidth: 2 * scale,
                     });
-                    circle.on('click touchstart', (event) => this.changeColor(event));
+                    circle.on('click touchstart', (event) => this.changeCircleColor(event));
                     layer.add(circle);
                 }
             }
         },
-        changeColor(event) {
+        changeCircleColor(event) {
             const circle = event.target;
 
-            if (circle.fill() === "rgba(255, 0, 0, 0.2)") {
-                circle.fill("rgba(255, 255, 255, 0.1)");
-                circle.stroke("rgba(255, 255, 255, 0.1)");
+            if (circle.fill() === CLICKEDCOLOR) {
+                circle.fill(NORMALCOLOR);
+                circle.stroke(NORMALSTROKECOLOR);
             } else {
-                circle.fill("rgba(255, 0, 0, 0.2)");
-                circle.stroke("rgba(255, 0, 0, 0.2)");
+                circle.fill(CLICKEDCOLOR);
+                circle.stroke(CLICKEDCOLOR);
             }
             circle.getLayer().draw();
         },
         submitClickedCircles() {
-            this.clickedCircles = [];
-            this.layer.children.forEach((shape) => {
-                if (shape instanceof Konva.Circle && shape.fill() === "rgba(255, 0, 0, 0.2)") {
-                    this.clickedCircles.push({ x: shape.x(), y: shape.y() });
-                }
-            });
-            console.log('Clicked circles:', this.clickedCircles);
-            // ここで必要な処理を追加する（例えば、サーバーにデータを送信するなど）
+            const button = this.layer.findOne('Rect');
+            if (button.fill() === 'Blue') {
+                button.fill('Grey');
+                button.stroke('Grey');
+                button.getLayer().draw();
+                this.clickedPositionList = [];
+                this.layer.children.forEach((shape) => {
+                    if (shape instanceof Konva.Circle && shape.fill() === "rgba(255, 0, 0, 0.2)") {
+                        this.clickedPositionList.push({ x: shape.x(), y: shape.y() });
+                    }
+                });
+                console.log('Clicked circles:', this.clickedPositionList);
+                // ここで必要な処理を追加する（例えば、サーバーにデータを送信するなど）
+            }
         },
     },
 };
