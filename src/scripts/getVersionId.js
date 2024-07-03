@@ -1,6 +1,5 @@
 const config = {
-    assetUrl:"http://127.0.0.1:9081/assets/SANSK5A001x",
-    // assetUrl:"http://127.0.0.1:9081/assets/SANSK5A002x",
+    assetUrl:"http://127.0.0.1:5500/assets/SANSK5A001x",
 }
 
 async function getVersionId() {

@@ -26,7 +26,6 @@ export default {
     methods: {
         async initializeKonva() {
             let imageUrl = await getImageUrl();
-            // imageUrl = "http://127.0.0.1:9081/image/SANSK5A001x";
             if (imageUrl) {
                 let stage = new Konva.Stage({
                     container: 'container',
@@ -50,7 +49,7 @@ export default {
         drawButton(imageObj, layer, stage) {
             const button = new Konva.Rect({
                 x: stage.width() / 2, //x:stage.width() / 2 + imageObj.width / 2
-                y: stage.height() / 2 + imageObj.height / 4, //y:stage.height() / 2 + imageObj.height / 2
+                y: stage.height() / 2 + imageObj.height / 2, //y:stage.height() / 2 + imageObj.height / 2
                 width: 50,
                 height: 20,
                 fill: 'Blue',

@@ -1,6 +1,5 @@
 const config = {
   assetUrl:"http://localhost:5500/assets/SANSK5A001x",
-  // assetUrl:"http://127.0.0.1:9081/assets/SANSK5A002x",
   port:9081,
 }
 
