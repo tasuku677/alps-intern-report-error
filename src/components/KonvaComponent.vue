@@ -6,6 +6,7 @@
 <script>
 import Konva from 'konva';
 import { getImageUrl } from '../scripts/getImageUrl.js';
+import { getVersionId } from '../scripts/getVersionId.js';
 
 const CLICKEDCOLOR = "rgba(255, 0, 0, 0.2)";
 const NORMALCOLOR = "rgba(255, 255, 255, 0.1)";
@@ -18,6 +19,8 @@ export default {
             stage: null,
             layer: null,
             clickedPositionList: [],
+            imageUrl: "",
+            versionId: "",
         };
     },
     mounted() {
@@ -25,8 +28,9 @@ export default {
     },
     methods: {
         async initializeKonva() {
-            let imageUrl = await getImageUrl();
-            if (imageUrl) {
+            this.imageUrl = await getImageUrl();
+            this.varsionId = await getVersionId();
+            if (this.imageUrl) {
                 let stage = new Konva.Stage({
                     container: 'container',
                     width: window.innerWidth,
@@ -38,21 +42,36 @@ export default {
                 this.stage = stage;
                 this.layer = layer;
 
+                // this.drawBackGround(layer);
+
                 let imageObj = new Image();
                 imageObj.onload = () => {
                     this.drawButton(imageObj, layer, stage);
                     this.drawImage(imageObj, layer, stage);
                 };
-                imageObj.src = imageUrl;
+                imageObj.src = this.imageUrl;
+
+                this.addPinchZoom(this.stage);
             }
+        },
+        drawBackGround(layer) {
+            let backGround = new Konva.Rect({
+                width: window.innerWidth,
+                height: window.innerHeight,
+                fill: 'black',
+                stroke: 'black',
+                fillPatternRepeat: 'repeat',
+            })
+            layer.add(backGround);
         },
         drawButton(imageObj, layer, stage) {
             const button = new Konva.Rect({
-                x: stage.width() / 2, //x:stage.width() / 2 + imageObj.width / 2
-                y: stage.height() / 2 + imageObj.height / 2, //y:stage.height() / 2 + imageObj.height / 2
+                x: stage.width() / 2,
+                y: stage.height() / 2 + imageObj.height / 2,
                 width: 50,
                 height: 20,
                 fill: 'Blue',
+                id: 'button',
             });
             const buttonText = new Konva.Text({
                 x: button.x(), // ボタンの位置に合わせて調整
@@ -67,8 +86,8 @@ export default {
                 x: button.x() + (button.width() - buttonText.width()) / 2,
                 y: button.y() + (button.height() - buttonText.height()) / 2,
             });
-            // button.on('click touchstart', () => this.submitClickedCircles());
-            buttonText.on('click touchstart', () => this.submitClickedCircles());
+            button.on('click tap', () => this.submitClickedCircles());
+            buttonText.on('click tap', () => this.submitClickedCircles());
 
             layer.add(button);
             layer.add(buttonText);
@@ -108,7 +127,7 @@ export default {
                         stroke: "rgba(255, 255, 255, 0.1)",
                         strokeWidth: 2 * scale,
                     });
-                    circle.on('click touchstart', (event) => this.changeCircleColor(event));
+                    circle.on('click tap', (event) => this.changeCircleColor(event));
                     layer.add(circle);
                 }
             }
@@ -126,7 +145,7 @@ export default {
             circle.getLayer().draw();
         },
         submitClickedCircles() {
-            const button = this.layer.findOne('Rect');
+            const button = this.layer.findOne('#button');
             if (button.fill() === 'Blue') {
                 button.fill('Grey');
                 button.stroke('Grey');
@@ -138,10 +157,66 @@ export default {
                     }
                 });
                 console.log('Clicked circles:', this.clickedPositionList);
-                // ここで必要な処理を追加する（例えば、サーバーにデータを送信するなど）
+                console.log(this.versionId);
+                // be supposed to send the data below
             }
         },
-    },
+        addPinchZoom(stage) {
+            let lastDist = 0;
+            let lastCenter = null;
+
+            stage.on('touchmove', (evt) => {
+                if (evt.evt.touches.length === 2) {
+                    evt.evt.preventDefault();
+                    const touch1 = evt.evt.touches[0];
+                    const touch2 = evt.evt.touches[1];
+                    const dist = this.getDistance(touch1, touch2);
+                    if (!lastDist) {
+                        lastDist = dist;
+                    }
+                    const scale = stage.scaleX() * (dist / lastDist);
+                    const center = this.getCenter(touch1, touch2);
+                    if (!lastCenter) {
+                        lastCenter = center;
+                    }
+
+                    // const pointTo = {
+                    //     x: (center.x - stage.x()) / stage.scaleX(),
+                    //     y: (center.y - stage.y()) / stage.scaleY(),
+                    // };
+
+                    stage.scale({ x: scale, y: scale });
+
+                    const dx = (center.x - lastCenter.x) / scale;
+                    const dy = (center.y - lastCenter.y) / scale;
+
+                    stage.position({
+                        x: stage.x() - dx * (scale - stage.scaleX()),
+                        y: stage.y() - dy * (scale - stage.scaleY()),
+                    });
+
+                    lastDist = dist;
+                    lastCenter = center;
+                    stage.batchDraw();
+                }
+            });
+            stage.on('touchend', () => {
+                lastDist = 0;
+                lastCenter = null;
+            });
+        },
+        getDistance(p1, p2) {
+            return Math.sqrt(
+                Math.pow(p2.clientX - p1.clientX, 2) + Math.pow(p2.clientY - p1.clientY, 2)
+            );
+        },
+        getCenter(p1, p2) {
+            return {
+                x: (p1.clientX + p2.clientX) / 2,
+                y: (p1.clientY + p2.clientY) / 2,
+            };
+        },
+    }
 };
 </script>
 

@@ -1,17 +1,19 @@
 <template>
   <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
     <KonvaComponent />
+    <!-- <ParentIframe /> -->
 </template>
 
 <script>
-// import ParentOfIframe from './components/ParentOfIframe.vue'
+// import ParentIframe from './components/ParentIframe.vue'
 import KonvaComponent from './components/KonvaComponent.vue'
 
 export default {
   name: 'App',
   components: {
     KonvaComponent
-  }
+    // ParentIframe
+  },
 }
 </script>
 
