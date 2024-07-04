@@ -5,8 +5,8 @@
 
 <script>
 import Konva from 'konva';
-import { getImageUrl } from '../scripts/getImageUrl.js';
-import { getVersionId } from '../scripts/getVersionId.js';
+import { getAssetInfo } from '../scripts/getAssetInfo.js';
+import { getDistance, getCenter } from '../scripts/helper.js';
 
 const CLICKEDCOLOR = "rgba(255, 0, 0, 0.2)";
 const NORMALCOLOR = "rgba(255, 255, 255, 0.1)";
@@ -20,6 +20,7 @@ export default {
             layer: null,
             clickedPositionList: [],
             imageUrl: "",
+            assetId:"",
             versionId: "",
         };
     },
@@ -28,8 +29,10 @@ export default {
     },
     methods: {
         async initializeKonva() {
-            this.imageUrl = await getImageUrl();
-            this.varsionId = await getVersionId();
+            const data = JSON.parse(await getAssetInfo());
+            this.imageUrl = data.imageUrl;
+            this.assetId = data.assetId;
+            this.versionId = data.versionId;
             if (this.imageUrl) {
                 let stage = new Konva.Stage({
                     container: 'container',
@@ -68,15 +71,15 @@ export default {
             const button = new Konva.Rect({
                 x: stage.width() / 2,
                 y: stage.height() / 2 + imageObj.height / 2,
-                width: 50,
-                height: 20,
+                width: 70,
+                height: 40,
                 fill: 'Blue',
                 id: 'button',
             });
             const buttonText = new Konva.Text({
                 x: button.x(), // ボタンの位置に合わせて調整
                 y: button.y(), // ボタンの位置に合わせて調整
-                text: 'Done',
+                text: 'Submit',
                 fontSize: 20,
                 fontFamily: 'Arial',
                 fill: 'White',
@@ -157,8 +160,12 @@ export default {
                     }
                 });
                 console.log('Clicked circles:', this.clickedPositionList);
-                console.log(this.versionId);
-                // be supposed to send the data below
+
+                window.parent.postMessage({
+                    clickedPositions: JSON.stringify(this.clickedPositionList),
+                    versionId: this.versionId,
+                    imageId: this.imageUrl,
+                }, "*");
             }
         },
         addPinchZoom(stage) {
@@ -170,12 +177,12 @@ export default {
                     evt.evt.preventDefault();
                     const touch1 = evt.evt.touches[0];
                     const touch2 = evt.evt.touches[1];
-                    const dist = this.getDistance(touch1, touch2);
+                    const dist = getDistance(touch1, touch2);
                     if (!lastDist) {
                         lastDist = dist;
                     }
                     const scale = stage.scaleX() * (dist / lastDist);
-                    const center = this.getCenter(touch1, touch2);
+                    const center = getCenter(touch1, touch2);
                     if (!lastCenter) {
                         lastCenter = center;
                     }
@@ -204,17 +211,6 @@ export default {
                 lastDist = 0;
                 lastCenter = null;
             });
-        },
-        getDistance(p1, p2) {
-            return Math.sqrt(
-                Math.pow(p2.clientX - p1.clientX, 2) + Math.pow(p2.clientY - p1.clientY, 2)
-            );
-        },
-        getCenter(p1, p2) {
-            return {
-                x: (p1.clientX + p2.clientX) / 2,
-                y: (p1.clientY + p2.clientY) / 2,
-            };
         },
     }
 };
