@@ -19,20 +19,28 @@ export default {
             stage: null,
             layer: null,
             clickedPositionList: [],
+            circleSpace:0,
+            initialCircleX:0,
+            initialCircleY:0,
             imageUrl: "",
-            assetId:"",
+            assetId: "",
             versionId: "",
+            lastCenter: null,
+            lastDist: 0,
+            dragStopped: false,
         };
     },
     mounted() {
         this.initializeKonva();
+        // this.setupDragAndZoom();
     },
     methods: {
         async initializeKonva() {
             const data = JSON.parse(await getAssetInfo());
             this.imageUrl = data.imageUrl;
             this.assetId = data.assetId;
-            this.versionId = data.versionId;
+            this.versionId = data.versionId;  
+
             if (this.imageUrl) {
                 let stage = new Konva.Stage({
                     container: 'container',
@@ -54,19 +62,20 @@ export default {
                 };
                 imageObj.src = this.imageUrl;
 
-                this.addPinchZoom(this.stage);
+                // this.addPinchZoom(this.stage);
+                this.setupDragAndZoom(this.stage);
             }
         },
-        drawBackGround(layer) {
-            let backGround = new Konva.Rect({
-                width: window.innerWidth,
-                height: window.innerHeight,
-                fill: 'black',
-                stroke: 'black',
-                fillPatternRepeat: 'repeat',
-            })
-            layer.add(backGround);
-        },
+        // drawBackGround(layer) {
+        //     let backGround = new Konva.Rect({
+        //         width: window.innerWidth,
+        //         height: window.innerHeight,
+        //         fill: 'black',
+        //         stroke: 'black',
+        //         fillPatternRepeat: 'repeat',
+        //     })
+        //     layer.add(backGround);
+        // },
         drawButton(imageObj, layer, stage) {
             const button = new Konva.Rect({
                 x: stage.width() / 2,
@@ -110,6 +119,8 @@ export default {
                 image: imageObj,
                 width: imageObj.width * scale,
                 height: imageObj.height * scale,
+                draggable:true,
+                stroke: 'Black',
             });
             layer.add(konvaImage);
             this.drawCircles(layer, imageObj, scale);
@@ -120,8 +131,13 @@ export default {
             const cols = 60;
             const spacing = (imageObj.height / rows) * scale;
 
-            for (let i = 0; i < rows; i++) {
+            for (let i = 1; i < rows; i++) {
                 for (let j = 0; j < cols; j++) {
+                    if(i == 0 && j == 0){
+                        this.initialCircleX = (this.stage.width() - imageObj.width * scale) / 2;
+                        this.initialCircleY = (this.stage.height() - imageObj.height * scale) / 2;
+                        this.circleSpace = spacing;
+                    }
                     let circle = new Konva.Circle({
                         x: spacing * j + (this.stage.width() - imageObj.width * scale) / 2,
                         y: spacing * i + (this.stage.height() - imageObj.height * scale) / 2,
@@ -149,24 +165,90 @@ export default {
         },
         submitClickedCircles() {
             const button = this.layer.findOne('#button');
-            if (button.fill() === 'Blue') {
-                button.fill('Grey');
-                button.stroke('Grey');
-                button.getLayer().draw();
-                this.clickedPositionList = [];
-                this.layer.children.forEach((shape) => {
-                    if (shape instanceof Konva.Circle && shape.fill() === "rgba(255, 0, 0, 0.2)") {
-                        this.clickedPositionList.push({ x: shape.x(), y: shape.y() });
-                    }
-                });
-                console.log('Clicked circles:', this.clickedPositionList);
-
-                window.parent.postMessage({
-                    clickedPositions: JSON.stringify(this.clickedPositionList),
-                    versionId: this.versionId,
-                    imageId: this.imageUrl,
-                }, "*");
+            if (button.fill() !== 'Blue'){
+                return;
             }
+            button.fill('Grey');
+            button.stroke('Grey');
+            button.getLayer().draw();
+            this.clickedPositionList = [];
+            this.layer.children.forEach((shape) => {
+                if (shape instanceof Konva.Circle && shape.fill() === CLICKEDCOLOR) {
+                    this.clickedPositionList.push({ 
+                        x: Math.floor((shape.x() - this.initialCircleX) / this.circleSpace), 
+                        y: Math.floor((shape.y() - this.initialCircleY) / this.circleSpace),
+                    });
+                }
+            });
+            console.log('Clicked circles:', this.clickedPositionList);
+
+            window.parent.postMessage({
+                clickedPositions: JSON.stringify(this.clickedPositionList),
+                versionId: this.versionId,
+                imageId: this.imageUrl,
+            }, "*");
+        },
+        setupDragAndZoom(stage) {
+            stage.on('touchmove', (e) => {
+                e.evt.preventDefault();
+                var touch1 = e.evt.touches[0];
+                var touch2 = e.evt.touches[1];
+
+                if (touch1 && touch2) {
+                    if (stage.isDragging()) {
+                        this.dragStopped = true;
+                        stage.stopDrag();
+                    }
+
+                    var p1 = {
+                        x: touch1.clientX,
+                        y: touch1.clientY,
+                    };
+                    var p2 = {
+                        x: touch2.clientX,
+                        y: touch2.clientY,
+                    };
+
+                    if (!this.lastCenter) {
+                        this.lastCenter = getCenter(p1, p2);
+                        return;
+                    }
+                    var newCenter = getCenter(p1, p2);
+
+                    var dist = getDistance(p1, p2);
+
+                    if (!this.lastDist) {
+                        this.lastDist = dist;
+                    }
+
+                    var pointTo = {
+                        x: (newCenter.x - stage.x()) / stage.scaleX(),
+                        y: (newCenter.y - stage.y()) / stage.scaleX(),
+                    };
+
+                    var scale = this.stage.scaleX() * (dist / this.lastDist);
+
+                    this.stage.scaleX(scale);
+                    this.stage.scaleY(scale);
+
+                    var dx = newCenter.x - this.lastCenter.x;
+                    var dy = newCenter.y - this.lastCenter.y;
+
+                    var newPos = {
+                        x: newCenter.x - pointTo.x * scale + dx,
+                        y: newCenter.y - pointTo.y * scale + dy,
+                    };
+
+                    stage.position(newPos);
+
+                    this.lastDist = dist;
+                    this.lastCenter = newCenter;
+                }
+            });
+            this.stage.on('touchend', () => {
+                this.lastDist = 0;
+                this.lastCenter = null;
+            });
         },
         addPinchZoom(stage) {
             let lastDist = 0;
