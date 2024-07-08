@@ -132,10 +132,10 @@ export default {
             const spacing = (imageObj.height / rows) * scale;
 
             for (let i = 1; i < rows; i++) {
-                for (let j = 0; j < cols; j++) {
-                    if(i == 0 && j == 0){
-                        this.initialCircleX = (this.stage.width() - imageObj.width * scale) / 2;
-                        this.initialCircleY = (this.stage.height() - imageObj.height * scale) / 2;
+                for (let j = 1; j < cols; j++) {
+                    if(i == 1 && j == 1){
+                        this.initialCircleX = spacing * j + (this.stage.width() - imageObj.width * scale) / 2;
+                        this.initialCircleY = spacing * i + (this.stage.height() - imageObj.height * scale) / 2;
                         this.circleSpace = spacing;
                     }
                     let circle = new Konva.Circle({
