@@ -19,9 +19,11 @@ export default {
             stage: null,
             layer: null,
             clickedPositionList: [],
-            circleSpace:0,
-            initialCircleX:0,
-            initialCircleY:0,
+            // circleSpace:0,
+            space: 0,
+            scale: 1,
+            imageEdgeX:0,
+            imageEdgeY:0,
             imageUrl: "",
             assetId: "",
             versionId: "",
@@ -59,11 +61,12 @@ export default {
                 imageObj.onload = () => {
                     this.drawButton(imageObj, layer, stage);
                     this.drawImage(imageObj, layer, stage);
+                    console.log("imageEdge:(x,y)", this.imageEdgeX, this.imageEdgeY);
                 };
                 imageObj.src = this.imageUrl;
 
                 // this.addPinchZoom(this.stage);
-                this.setupDragAndZoom(this.stage);
+                // this.setupDragAndZoom(this.stage);
             }
         },
         // drawBackGround(layer) {
@@ -78,8 +81,10 @@ export default {
         // },
         drawButton(imageObj, layer, stage) {
             const button = new Konva.Rect({
-                x: stage.width() / 2,
-                y: stage.height() / 2 + imageObj.height / 2,
+                // x: stage.width() / 2,
+                x:0,
+                // y: stage.height() / 2 + imageObj.height / 2,
+                y: stage.height() - stage.height(),
                 width: 70,
                 height: 40,
                 fill: 'Blue',
@@ -106,48 +111,64 @@ export default {
             layer.draw();
         },
         drawImage(imageObj, layer, stage) {
-            let scale = 1;
-            if (imageObj.width > stage.width() || imageObj.height > stage.height()) {
-                const widthScale = stage.width() / imageObj.width;
-                const heightScale = stage.height() / imageObj.height;
-                scale = Math.min(widthScale, heightScale) * 0.9;
-            }
+            const widthScale = stage.width() / imageObj.width;
+            const heightScale = stage.height() / imageObj.height;
+            this.scale = Math.min(widthScale, heightScale) * 0.95;
 
             let konvaImage = new Konva.Image({
-                x: (stage.width() - imageObj.width * scale) / 2,
-                y: (stage.height() - imageObj.height * scale) / 2,
+                x: (stage.width() - imageObj.width * this.scale) / 2,
+                y: (stage.height() - imageObj.height * this.scale) / 2,
                 image: imageObj,
-                width: imageObj.width * scale,
-                height: imageObj.height * scale,
-                draggable:true,
+                width: imageObj.width * this.scale,
+                height: imageObj.height * this.scale,
+                // draggable:true,
                 stroke: 'Black',
             });
+            this.imageEdgeX = konvaImage.x();
+            this.imageEdgeY = konvaImage.y();
             layer.add(konvaImage);
-            this.drawCircles(layer, imageObj, scale);
+            this.drawGrids(imageObj, layer, stage);
             layer.draw();
         },
-        drawCircles(layer, imageObj, scale) {
-            const rows = 13;
-            const cols = 60;
-            const spacing = (imageObj.height / rows) * scale;
+        drawGrids(imageObj, layer, stage) {
+            // const rows = 20;
+            // const cols = 20;
+            // const spacing = (imageObj.height / rows) * this.scale;
+            // const recWidth = spacing;
+            // const recHeight = spacing;
+            const recWidth = 50;
+            const recHeight = 50;
+            const spacing = recHeight * this.scale;
+            const rows = Math.floor(imageObj.height / recHeight);
+            const cols = Math.floor(imageObj.width / recWidth); 
 
-            for (let i = 1; i < rows; i++) {
-                for (let j = 1; j < cols; j++) {
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
                     if(i == 1 && j == 1){
-                        this.initialCircleX = spacing * j + (this.stage.width() - imageObj.width * scale) / 2;
-                        this.initialCircleY = spacing * i + (this.stage.height() - imageObj.height * scale) / 2;
-                        this.circleSpace = spacing;
+                        // this.circleSpace = spacing;
+                        this.space = spacing;
                     }
-                    let circle = new Konva.Circle({
-                        x: spacing * j + (this.stage.width() - imageObj.width * scale) / 2,
-                        y: spacing * i + (this.stage.height() - imageObj.height * scale) / 2,
-                        radius: 25 * scale,
-                        fill: "rgba(255, 255, 255, 0.1)",
-                        stroke: "rgba(255, 255, 255, 0.1)",
-                        strokeWidth: 2 * scale,
-                    });
-                    circle.on('click tap', (event) => this.changeCircleColor(event));
-                    layer.add(circle);
+                    // let circle = new Konva.Circle({
+                    //     x: spacing * j + (stage.width() - imageObj.width * this.scale) / 2,
+                    //     y: spacing * i + (stage.height() - imageObj.height * this.scale) / 2,
+                    //     radius: 25 * this.scale,
+                    //     fill: NORMALCOLOR,
+                    //     stroke: NORMALCOLOR,
+                    //     strokeWidth: 2 * this.scale,
+                    // });
+                    // circle.on('click tap', (event) => this.changeCircleColor(event));
+                    // layer.add(circle);
+                    let grid = new Konva.Rect({
+                        x: spacing * j + (stage.width() - imageObj.width * this.scale) / 2,
+                        y: spacing * i + (stage.height() - imageObj.height * this.scale) / 2,
+                        // width: 25 * this.scale,
+                        width:recWidth * this.scale,
+                        height:recHeight * this.scale,
+                        fill:NORMALCOLOR,
+                        stroke:NORMALCOLOR,
+                    })
+                    grid.on('click tap', (event) => this.changeCircleColor(event));
+                    layer.add(grid);
                 }
             }
         },
@@ -173,19 +194,21 @@ export default {
             button.getLayer().draw();
             this.clickedPositionList = [];
             this.layer.children.forEach((shape) => {
-                if (shape instanceof Konva.Circle && shape.fill() === CLICKEDCOLOR) {
+                if (shape instanceof Konva.Rect && shape.fill() === CLICKEDCOLOR) {
                     this.clickedPositionList.push({ 
-                        x: Math.floor((shape.x() - this.initialCircleX) / this.circleSpace), 
-                        y: Math.floor((shape.y() - this.initialCircleY) / this.circleSpace),
+                        xFromLeft: shape.x() - this.imageEdgeX,
+                        yFromTop: shape.y() - this.imageEdgeY,
+                        squareSize: this.space,
                     });
                 }
             });
-            console.log('Clicked circles:', this.clickedPositionList);
+            console.log('Clicked Grids:', this.clickedPositionList);
 
             window.parent.postMessage({
                 clickedPositions: JSON.stringify(this.clickedPositionList),
                 versionId: this.versionId,
-                imageId: this.imageUrl,
+                imageUrl: this.imageUrl,
+                space: this.space,
             }, "*");
         },
         setupDragAndZoom(stage) {
