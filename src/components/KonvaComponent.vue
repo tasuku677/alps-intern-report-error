@@ -6,7 +6,7 @@
 <script>
 import Konva from 'konva';
 import { getAssetInfo } from '../scripts/getAssetInfo.js';
-import { getDistance, getCenter } from '../scripts/helper.js';
+import { getGridSize, getDistance, getCenter } from '../scripts/helper.js';
 
 const CLICKEDCOLOR = "rgba(255, 0, 0, 0.2)";
 const NORMALCOLOR = "rgba(255, 255, 255, 0.1)";
@@ -49,6 +49,8 @@ export default {
                     width: window.innerWidth,
                     height: window.innerHeight,
                 });
+                console.log("stage.width:", window.innerWidth);
+                console.log("stage.height:", window.innerHeight);
 
                 let layer = new Konva.Layer();
                 stage.add(layer);
@@ -59,6 +61,8 @@ export default {
 
                 let imageObj = new Image();
                 imageObj.onload = () => {
+                    console.log("original imageWidth", imageObj.width);
+                    console.log("original imageHeight", imageObj.height);
                     this.drawButton(imageObj, layer, stage);
                     this.drawImage(imageObj, layer, stage);
                     console.log("imageEdge:(x,y)", this.imageEdgeX, this.imageEdgeY);
@@ -82,7 +86,7 @@ export default {
         drawButton(imageObj, layer, stage) {
             const button = new Konva.Rect({
                 // x: stage.width() / 2,
-                x:0,
+                x: 20,
                 // y: stage.height() / 2 + imageObj.height / 2,
                 y: stage.height() - stage.height(),
                 width: 70,
@@ -113,7 +117,7 @@ export default {
         drawImage(imageObj, layer, stage) {
             const widthScale = stage.width() / imageObj.width;
             const heightScale = stage.height() / imageObj.height;
-            this.scale = Math.min(widthScale, heightScale) * 0.95;
+            this.scale = Math.min(widthScale, heightScale);
 
             let konvaImage = new Konva.Image({
                 x: (stage.width() - imageObj.width * this.scale) / 2,
@@ -124,6 +128,8 @@ export default {
                 // draggable:true,
                 stroke: 'Black',
             });
+            console.log("imageWidth after modified", konvaImage.width());
+            console.log("imageHeight after modified", konvaImage.height());
             this.imageEdgeX = konvaImage.x();
             this.imageEdgeY = konvaImage.y();
             layer.add(konvaImage);
@@ -131,37 +137,21 @@ export default {
             layer.draw();
         },
         drawGrids(imageObj, layer, stage) {
-            // const rows = 20;
-            // const cols = 20;
-            // const spacing = (imageObj.height / rows) * this.scale;
-            // const recWidth = spacing;
-            // const recHeight = spacing;
-            const recWidth = 50;
-            const recHeight = 50;
+            const recWidth = getGridSize(Math.min(imageObj.width, imageObj.height));
+            const recHeight = recWidth;
+            // const recHeight = 50;
             const spacing = recHeight * this.scale;
-            const rows = Math.floor(imageObj.height / recHeight);
-            const cols = Math.floor(imageObj.width / recWidth); 
+            const rows = Math.floor(imageObj.height / recHeight) + 1;
+            const cols = Math.floor(imageObj.width / recWidth) + 1; 
 
             for (let i = 0; i < rows; i++) {
                 for (let j = 0; j < cols; j++) {
                     if(i == 1 && j == 1){
-                        // this.circleSpace = spacing;
                         this.space = spacing;
                     }
-                    // let circle = new Konva.Circle({
-                    //     x: spacing * j + (stage.width() - imageObj.width * this.scale) / 2,
-                    //     y: spacing * i + (stage.height() - imageObj.height * this.scale) / 2,
-                    //     radius: 25 * this.scale,
-                    //     fill: NORMALCOLOR,
-                    //     stroke: NORMALCOLOR,
-                    //     strokeWidth: 2 * this.scale,
-                    // });
-                    // circle.on('click tap', (event) => this.changeCircleColor(event));
-                    // layer.add(circle);
                     let grid = new Konva.Rect({
                         x: spacing * j + (stage.width() - imageObj.width * this.scale) / 2,
                         y: spacing * i + (stage.height() - imageObj.height * this.scale) / 2,
-                        // width: 25 * this.scale,
                         width:recWidth * this.scale,
                         height:recHeight * this.scale,
                         fill:NORMALCOLOR,
