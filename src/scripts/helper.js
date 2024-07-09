@@ -1,9 +1,5 @@
 function getGridSize(shortSide) {
-    if (shortSide < 50) return 1;
-    else if (shortSide < 100) return 2.5;
-    else if (shortSide < 200) return 5;
-    else if (shortSide < 400) return 10;
-    else if (shortSide < 800) return 20;
+    if (shortSide < 200) return 5;
     else if (shortSide < 1600) return 40;
     else return 80;
 }
