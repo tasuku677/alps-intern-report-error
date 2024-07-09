@@ -68,6 +68,7 @@ export default {
                     console.log("imageEdge:(x,y)", this.imageEdgeX, this.imageEdgeY);
                 };
                 imageObj.src = this.imageUrl;
+                // imageObj.src = "formula1.png";
 
                 // this.addPinchZoom(this.stage);
                 // this.setupDragAndZoom(this.stage);
@@ -127,6 +128,7 @@ export default {
                 height: imageObj.height * this.scale,
                 // draggable:true,
                 stroke: 'Black',
+                opacity: 0.1,
             });
             console.log("imageWidth after modified", konvaImage.width());
             console.log("imageHeight after modified", konvaImage.height());
@@ -139,16 +141,13 @@ export default {
         drawGrids(imageObj, layer, stage) {
             const recWidth = getGridSize(Math.min(imageObj.width, imageObj.height));
             const recHeight = recWidth;
-            // const recHeight = 50;
             const spacing = recHeight * this.scale;
             const rows = Math.floor(imageObj.height / recHeight) + 1;
             const cols = Math.floor(imageObj.width / recWidth) + 1; 
 
+            this.space = recHeight;
             for (let i = 0; i < rows; i++) {
                 for (let j = 0; j < cols; j++) {
-                    if(i == 1 && j == 1){
-                        this.space = spacing;
-                    }
                     let grid = new Konva.Rect({
                         x: spacing * j + (stage.width() - imageObj.width * this.scale) / 2,
                         y: spacing * i + (stage.height() - imageObj.height * this.scale) / 2,
@@ -186,8 +185,8 @@ export default {
             this.layer.children.forEach((shape) => {
                 if (shape instanceof Konva.Rect && shape.fill() === CLICKEDCOLOR) {
                     this.clickedPositionList.push({ 
-                        xFromLeft: shape.x() - this.imageEdgeX,
-                        yFromTop: shape.y() - this.imageEdgeY,
+                        xFromLeft: shape.x() - this.imageEdgeX + this.space / 2,
+                        yFromTop: shape.y() - this.imageEdgeY + this.space / 2,
                         squareSize: this.space,
                     });
                 }

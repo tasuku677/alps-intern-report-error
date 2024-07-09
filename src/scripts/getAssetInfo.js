@@ -1,6 +1,7 @@
 const config = {
-  // assetUrl:"http://localhost:5500/assets/SANSK5A001x",
-  assetUrl:"http://localhost:5500/assets/car-dodge",
+  assetUrl:"http://localhost:5500/assets/SANSK5A001x",
+  // assetUrl:"http://localhost:5500/assets/car-dodge",
+  // assetUrl:"http://localhost:5500/assets/formula",
   port:9081,
 }
 
