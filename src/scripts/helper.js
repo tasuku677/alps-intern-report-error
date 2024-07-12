@@ -1,7 +1,11 @@
 function getGridSize(shortSide) {
-    if (shortSide < 200) return 5;
-    else if (shortSide < 1600) return 40;
-    else return 80;
+    let gridSize, quotient;
+    if(shortSide < 200) gridSize = 5;
+    else if(shortSide < 1600) gridSize = 40;
+    else gridSize = 80;
+    quotient =  Math.floor(shortSide / gridSize)
+    if(quotient) gridSize += (shortSide % 40) / quotient;
+    return gridSize;
 }
 function getDistance(p1, p2) {
     return Math.sqrt(
