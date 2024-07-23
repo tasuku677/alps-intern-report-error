@@ -1,7 +1,7 @@
 function getGridSize(shortSide) {
     let gridSize, quotient;
     if(shortSide < 200) gridSize = 5;
-    else if(shortSide < 1600) gridSize = 40;
+    else if(shortSide < 1800) gridSize = 40;
     else gridSize = 80;
     quotient =  Math.floor(shortSide / gridSize)
     if(quotient) gridSize += (shortSide % 40) / quotient;
