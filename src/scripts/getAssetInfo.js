@@ -1,8 +1,8 @@
 const config = {
-  assetUrl:"http://localhost:5500/assets/SANSK5A001x",
-  // assetUrl:"http://localhost:5500/assets/car-dodge",
+  // assetUrl: "http://localhost:5501/assets/SANSK5A001x",
+  assetUrl:"http://localhost:5500/assets/car-dodge",
   // assetUrl:"http://localhost:5500/assets/formula",
-  port:9081,
+  port: 9081,
 }
 
 async function getAssetInfo() {
@@ -26,15 +26,14 @@ function extractId(url) {
   // URLを"/"で分割し、最後の要素を取得
   let parts = url.split('/');
   let filename = parts[parts.length - 1];
-  
+
   // 拡張子があれば取り除く
   let lastIndex = filename.lastIndexOf('.');
   if (lastIndex !== -1) {
-      filename = filename.substring(0, lastIndex);
+    filename = filename.substring(0, lastIndex);
   }
-  
+
   return filename;
 }
-
 // getAssetInfo();
 export{getAssetInfo};
