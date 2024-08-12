@@ -77,14 +77,13 @@ export default {
                 draggable: true,
             });
             const buttonText = new Konva.Text({
-                x: button.x(), // ボタンの位置に合わせて調整
-                y: button.y(), // ボタンの位置に合わせて調整
+                x: button.x(), 
+                y: button.y(), 
                 text: 'Submit',
                 fontSize: 20,
                 fontFamily: 'Arial',
                 fill: 'White',
             });
-            // テキストの位置を調整してボタンの中央に配置する例
             buttonText.position({
                 x: button.x() + (button.width() - buttonText.width()) / 2,
                 y: button.y() + (button.height() - buttonText.height()) / 2,

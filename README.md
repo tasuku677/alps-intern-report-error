@@ -38,9 +38,9 @@ To access the defective part selection, follow the URL format below:
 http://{frontend-server-address}:{port-number-by-frontend}/{asset-ID}?port={port-number-used-by-backend}
 ```
 
-Replace `{frontend-server-address}` with the address of the development server provided by the Vue CLI, `{port-number-used-by-frontend}` with the desired port number, `{asset-ID}` with the ID of the asset you want to access, and `{port-number-used-by-backend}` with the port number used by the backend server.
+Replace `{frontend-server-address}` with the address of the development server provided by the Vue CLI, `{port-number}` with the desired port number, `{asset-ID}` with the ID of the asset you want to access.
 
-For example, if the server address is `localhost`, the frontend port number is `5500`, the asset ID is `car-dodge`, and the backend port number is `9081`, the URL would be:
+For example, if the server address is `localhost`, the frontend port number is `5500`, the asset ID is `car-dodge`, the URL would be:
 
 ```
 http:/localhost:5500/car-dodge?port=9081
