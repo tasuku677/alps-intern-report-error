@@ -7,13 +7,12 @@ window.addEventListener("message", (event) => {
     positionList = clickedPositions.map(item => {
         return [item.xFromLeft, item.yFromTop];
     });
-    // console.log(positionList);
-
+    
     let url = imageUrl.replace( "image", "points");
     fetch(url, {
-        method: 'POST', // POSTメソッドを指定
+        method: 'POST', 
         headers: {
-            'Content-Type': 'application/json' // 送信するデータのタイプをJSONとして指定
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({
             points:positionList,
@@ -21,19 +20,15 @@ window.addEventListener("message", (event) => {
         })
     })
         .then(response => {
-            // レスポンスが成功した場合
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            // レスポンスをJSON形式で解析して返す
             return response.json();
         })
         .then(data => {
-            // POSTリクエストが成功した場合の処理
             console.log('POSTリクエスト成功:', data);
         })
         .catch(error => {
-            // エラー処理
             console.error('Fetch Error :-S', error);
         });
 
