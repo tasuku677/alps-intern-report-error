@@ -8,9 +8,10 @@ import Konva from 'konva';
 import { getAssetInfo } from '../scripts/getAssetInfo.js';
 import { getGridSize } from '../scripts/helper.js';
 
+
 const CLICKEDCOLOR = "rgba(255, 0, 0, 0.2)";
 const NORMALCOLOR = "rgba(255, 255, 255, 0.1)";
-const NORMALSTROKECOLOR = "rgba(0, 0, 0, 1)";
+const NORMALSTROKECOLOR = "rgba(255, 255, 255, 0.1)";
 
 
 export default {
@@ -66,12 +67,6 @@ export default {
             }
         },
         drawButton(versionId, imageUrl, scale, layer) {
-            // let group = new Konva.Group({
-            //     x: 10,
-            //     y: 0,
-            //     draggable: true,
-            // });
-            //TO DO:ボタンをグループにする
             const button = new Konva.Rect({
                 x: 10,
                 y: 0,
@@ -172,9 +167,6 @@ export default {
             button.fill('Grey');
             button.stroke('Grey');
             button.getLayer().draw();
-            //imageEdgeXを求める式をここに入れる
-            //imageEdgeXを求める式をここに入れる
-            
             const clickedPositionList = [];
             this.layer.children.forEach((shape) => {
                 if (shape instanceof Konva.Rect && shape.fill() === CLICKEDCOLOR) {
