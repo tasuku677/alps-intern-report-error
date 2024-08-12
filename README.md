@@ -43,5 +43,5 @@ Replace `{frontend-server-address}` with the address of the development server p
 For example, if the server address is `localhost`, the frontend port number is `5500`, the asset ID is `car-dodge`, the URL would be:
 
 ```
-http:/localhost:5500/car-dodge?port=9081
+http:/localhost:5500/car-dodge
 ```
