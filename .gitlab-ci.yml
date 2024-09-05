@@ -1,0 +1,36 @@
+stages:
+   - build
+
+build:
+  stage: build
+  image: "node:lts-slim"
+  script:
+#    - npm install -g npm@10.4.0
+    - npm install
+    - npm run build
+    - chown -R 1000:1000 dist/
+  when: manual
+  artifacts:
+    name: "build"
+    paths:
+      - dist/
+  only:
+    - master
+  tags:
+    - docker
+
+release:
+  stage: build
+  image: "node:lts-slim"
+  before_script:
+    - apk add --update-cache --upgrade curl
+  script:
+    - npm install
+    - npm run build
+    - chown -R 1000:1000 dist/
+    - tar -czf vprs-$CI_COMMIT_REF_NAME.gz.tar dist/
+    - 'curl -s --header "PRIVATE-TOKEN: $CI_JOB_TOKEN" --upload-file vprs-$CI_COMMIT_REF_NAME.gz.tar $REGISTRY/$CI_COMMIT_REF_NAME/vprs-$CI_COMMIT_REF_NAME.gz.tar'
+  only:
+    - tags
+  tags:
+    - docker
