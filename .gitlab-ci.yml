@@ -30,7 +30,7 @@ release:
     - npm run build
     - chown -R 1000:1000 dist/
     - tar -czf vprs-$CI_COMMIT_REF_NAME.gz.tar dist/
-    - 'curl -s --header "PRIVATE-TOKEN: $CI_JOB_TOKEN" --upload-file vprs-$CI_COMMIT_REF_NAME.gz.tar $REGISTRY/build/$CI_COMMIT_REF_NAME/vprs-$CI_COMMIT_REF_NAME.gz.tar'
+    - 'curl -s --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file vprs-$CI_COMMIT_REF_NAME.gz.tar $REGISTRY/build/$CI_COMMIT_REF_NAME/vprs-$CI_COMMIT_REF_NAME.gz.tar'
   only:
     - tags
   tags:
