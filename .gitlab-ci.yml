@@ -23,7 +23,8 @@ release:
   stage: build
   image: "node:lts-slim"
   before_script:
-    - apk add --update-cache --upgrade curl
+    - apt update
+    - apt install -y curl
   script:
     - npm install
     - npm run build
