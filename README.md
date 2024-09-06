@@ -35,7 +35,7 @@ Launch the backend server in advance by running the following command.
 To access the defective part selection, follow the URL format below:
 
 ```
-http://{frontend-server-address}:{port-number-by-frontend}/{asset-ID}?port={port-number-used-by-backend}
+http://{frontend-server-address}:{port-number-by-frontend}/{asset-ID}
 ```
 
 Replace `{frontend-server-address}` with the address of the development server provided by the Vue CLI, `{port-number}` with the desired port number, `{asset-ID}` with the ID of the asset you want to access.
