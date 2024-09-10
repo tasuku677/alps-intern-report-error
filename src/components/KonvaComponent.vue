@@ -78,7 +78,7 @@ export default {
                 height: 40,
                 fill: 'Blue',
                 id: 'button',
-                draggable: true,
+                // draggable: true,
             });
             const buttonText = new Konva.Text({
                 x: button.x(), 
@@ -107,7 +107,7 @@ export default {
                 width: imageObj.width * scale,
                 height: imageObj.height * scale,
                 id:'konvaImage',
-                draggable: true,
+                // draggable: true,
                 stroke: 'Black',
                 opacity: 1,
             });
@@ -144,7 +144,7 @@ export default {
                         fill: NORMALCOLOR,
                         stroke: NORMALSTROKECOLOR,
                         strokeWidth: 1,
-                        draggable: true,
+                        // draggable: true,
                     })
                     grid.on('click tap', (event) => this.changeGridColor(event));
                     layer.add(grid);
