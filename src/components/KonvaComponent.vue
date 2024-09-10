@@ -74,7 +74,7 @@ export default {
                 height: 40,
                 fill: 'Blue',
                 id: 'button',
-                draggable: true,
+                // draggable: true,
             });
             const buttonText = new Konva.Text({
                 x: button.x(), 
