@@ -1,6 +1,7 @@
 <template>
     <div id="container"></div>
     <!-- <button v-bind:style="buttonStyle" @click="submitClickedCircles">Submit</button> -->
+   <h3 v-if="error">Missing or unknown a required 'Assign-ID' parameter.</h3>
 </template>
 
 <script>
@@ -26,6 +27,7 @@ export default {
             spacingHeight: 0,
             imageEdgeX: 0,
             imageEdgeY: 0,
+            error: false
         };
     },
     mounted() {
@@ -34,9 +36,11 @@ export default {
     methods: {
         async initializeKonva() {
 
-            const { imageUrl, assetId, versionId } = JSON.parse(await getAssetInfo());
+            const { imageUrl, assetId, versionId } = await getAssetInfo();
             console.log("imageUrl", imageUrl, "assetId", assetId, "versionId", versionId);
-            if (imageUrl) {
+            if (!imageUrl) {
+              this.error = true
+            } else {
                 let stage = new Konva.Stage({
                     container: 'container',
                     width: window.innerWidth,
@@ -103,7 +107,7 @@ export default {
                 width: imageObj.width * scale,
                 height: imageObj.height * scale,
                 id:'konvaImage',
-                draggable: true,
+                // draggable: true,
                 stroke: 'Black',
                 opacity: 1,
             });
@@ -140,7 +144,7 @@ export default {
                         fill: NORMALCOLOR,
                         stroke: NORMALSTROKECOLOR,
                         strokeWidth: 1,
-                        draggable: true,
+                        // draggable: true,
                     })
                     grid.on('click tap', (event) => this.changeGridColor(event));
                     layer.add(grid);
