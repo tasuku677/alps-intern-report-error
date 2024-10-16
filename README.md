@@ -4,6 +4,8 @@
 ## Overview
 This Vue.js-based application allows users to tap on defective parts of a component and record the faulty areas. The tapped area data is submitted to a parent component along with the version ID and image URL.
 
+![スクリーンショット 2024-07-11 151409](https://github.com/user-attachments/assets/b72acde8-56a1-416e-8757-f121e90c0401)
+
 ## Getting started
 
 ### Backend
